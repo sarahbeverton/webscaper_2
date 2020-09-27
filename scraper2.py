@@ -6,6 +6,7 @@ import re
 import sys
 import argparse
 import requests
+from bs4 import BeautifulSoup
 
 
 def scrape_urls(webpage):
@@ -19,6 +20,34 @@ def scrape_urls(webpage):
     url_regex = re.compile(pattern, re.VERBOSE)
     urls = url_regex.findall(html.text)
     return urls
+
+
+def scrape_images(webpage):
+    """Finds image sources and returns their urls"""
+    html = requests.get(webpage)
+    images = []
+    soup = BeautifulSoup(html.text, 'html.parser')
+    for img in soup.find_all('img'):
+        img_url = img['src']
+        img_full_url = webpage + img_url
+        images.append(img_full_url)
+    return images
+
+
+def scrape_links(webpage):
+    """Finds a href links and returns them"""
+    html = requests.get(webpage)
+    links = []
+    soup = BeautifulSoup(html.text, 'html.parser')
+    http_pattern = r'http\S+'
+    http_regex = re.compile(http_pattern)
+    for a in soup.find_all('a'):
+        a_url = a['href']
+        if http_regex.search(a_url):
+            links.append(a_url)
+        else:
+            links.append(webpage + a_url)
+    return links
 
 
 def scrape_emails(webpage):
@@ -60,9 +89,14 @@ def main(args):
     urls = scrape_urls(parsed_args.webpage)
     emails = scrape_emails(parsed_args.webpage)
     phones = scrape_phones(parsed_args.webpage)
+    images = scrape_images(parsed_args.webpage)
+    links = scrape_links(parsed_args.webpage)
 
-    if urls:
-        print("\nURLS:\n\n", '\n'.join(urls))
+    all_urls = urls+images+links
+    all_urls_set = set(all_urls)
+
+    if all_urls:
+        print("\nURLS:\n\n", '\n'.join(all_urls_set))
     else:
         print("\nURLS:\n\nNone")
 
