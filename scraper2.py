@@ -95,18 +95,21 @@ def main(args):
     all_urls = urls+images+links
     all_urls_set = set(all_urls)
 
+    emails_set = set(emails)
+    phones_set = set(phones)
+
     if all_urls:
         print("\nURLS:\n\n", '\n'.join(all_urls_set))
     else:
         print("\nURLS:\n\nNone")
 
     if emails:
-        print("\nEMAILS:\n\n", '\n'.join(emails))
+        print("\nEMAILS:\n\n", '\n'.join(emails_set))
     else:
         print("\nEMAILS:\n\nNone")
 
     if phones:
-        print("\nPHONE NUMBERS:\n\n", '\n'.join(phones))
+        print("\nPHONE NUMBERS:\n\n", '\n'.join(phones_set))
     else:
         print("\nPHONE NUMBERS:\n\nNone")
 
