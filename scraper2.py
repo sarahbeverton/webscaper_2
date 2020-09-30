@@ -27,10 +27,14 @@ def scrape_images(webpage):
     html = requests.get(webpage)
     images = []
     soup = BeautifulSoup(html.text, 'html.parser')
+    http_pattern = r'http\S+'
+    http_regex = re.compile(http_pattern)
     for img in soup.find_all('img'):
         img_url = img['src']
-        img_full_url = webpage + img_url
-        images.append(img_full_url)
+        if http_regex.search(img_url):
+            images.append(img_url)
+        else:
+            images.append(webpage + img_url)
     return images
 
 
@@ -92,14 +96,26 @@ def main(args):
     images = scrape_images(parsed_args.webpage)
     links = scrape_links(parsed_args.webpage)
 
-    all_urls = urls+images+links
-    all_urls_set = set(all_urls)
-
+    # all_urls = urls+images+links
+    # all_urls_set = set(all_urls)
+    images_set = set(images)
+    links_set = set(links)
+    urls_set = set(urls)
     emails_set = set(emails)
     phones_set = set(phones)
 
-    if all_urls:
-        print("\nURLS:\n\n", '\n'.join(all_urls_set))
+    if images:
+        print("\nIMAGES:\n\n", '\n'.join(images_set))
+    else:
+        print("\nIMAGES:\n\nNone")
+    
+    if links:
+        print("\nRELATIVE LINKS:\n\n", '\n'.join(links_set))
+    else:
+        print("\nRELATIVE LINKS:\n\nNone")
+
+    if urls:
+        print("\nURLS:\n\n", '\n'.join(urls_set))
     else:
         print("\nURLS:\n\nNone")
 
