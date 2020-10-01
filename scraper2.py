@@ -45,7 +45,9 @@ def scrape_links(webpage):
     soup = BeautifulSoup(html.text, 'html.parser')
     http_pattern = r'http\S+'
     http_regex = re.compile(http_pattern)
-    for a in soup.find_all('a'):
+    all_a = soup.find_all('a')
+    all_a = filter(lambda x: x.has_attr('href'), all_a)
+    for a in all_a:
         a_url = a['href']
         if http_regex.search(a_url):
             links.append(a_url)
